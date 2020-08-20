@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<!-- Meta Tags APP -->
+	<!-- 3 - Configurar la ventana gráfica -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<!-- Establecer el título del iniciador-->
+	<meta name="apple-mobile-web-app-title" content="NYSCL">
+	<!-- 1 - Ocultar la interfaz de usuario del navegador-->
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<!-- 2 - Ejecutar una aplicación en modo independiente-->
+	<meta name="mobile-web-app-capable" content="yes">
+	<!-- 4 - Estilo de la barra de estado-->
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<!--Icono-->
+	<link rel="apple-touch-icon" sizes="60x60" href="images/iconIphone.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="images/iconIpad.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="images/iconIphoneRetina.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="images/iconIpadRetina.png">
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="styles/nysl.css">
+	<title>NYSL</title>
+</head>
+
+<body>
+	<!--Contenedor General-->
+	<!--Container ocupa todo el ancho-->
+	<div class="container-fluid" id="app">
+		<!-- Encabezado -->
+		<div class="row justify-content-between align-items-center">
+			<div class="col-sm-4 col-md-4 col-lg-2 col-xl-2">
+				<img id="logo" src="images/logo.png" alt="Logo NYSL, Un tigre con pelota." class="rounded img-fluid">
+			</div>
+			<div class=" col-xs-6 col-sm-8 col-md-8 col-lg-8 col-xl-8">
+				<h1>{{page}}</h1>
+
+			</div>
+
+		</div>
+
+		<!--Navegador de Páginas-->
+
+		<div class="row">
+			<div class="col">
+				<nav>
+					<!-- Cambiar a on click-->
+					<a v-on:click="mostrarPagina('NYSL HOME')" v-bind:class="{active: page=='NYSL HOME'}"> HOME</a>
+					<a v-on:click="mostrarPagina('NYSL Game Information')" v-bind:class="{active: page=='NYSL Game Information'}"> GAME</a>
+					<!-- Solo pone <a v-on:click="mostrarPagina(1)" class="activar">, no lo toma como una variable de vue, entonces usamos v-bind:class="{active:activar}"-->
+					<a v-on:click="mostrarPagina('CONTACT')" v-bind:class="{active:page=='CONTACT'}"> CONTACT</a>
+					<!-- Sign In -->
+					<a v-on:click="mostrarPagina('SIGN IN')" v-bind:class="{active: page=='SIGN IN'}"> SIGN IN</a>
+
+				</nav>
+			</div>
+		</div>
+
+		<!--Cuerpo Home-->
+		<div class="row home" v-if="page == 'NYSL HOME'">
+			<div class="col-12">
+				<h2>General Information</h2>
+				<p class="indent">The Northside Youth Soccer League was established in 1996 to provide athletes residing in Chicago's northside neighborhoods an environment in which to learn and play soccer. To be a member of NYSL, you must be between the ages of 4 - 12 and reside in a Chicago northside neighborhood. NYSL is run by a small full-time staff, and relies on the generous volunteer time of parents and previous league members.</p>
+			</div>
+		</div>
+
+		<!-- Cuerpo y Pie Game -->
+		<div class="row game" v-if="page == 'NYSL Game Information'">
+			<div class="col-12">
+				<div class="row">
+					<h2><strong>Fall Schedule</strong></h2>
+				</div>
+				<div class="row">
+					<p class="announcement">*All games take place on Saturday</p>
+				</div>
+				<!--	Tabla con filtro por mes-->
+				<div class="row">
+					<div class="col-6 ">
+						<label>
+							<strong>Filter by Month:</strong>
+							<select id="meses" onchange="filter()">
+								<option value="" selected="selected">--All--</option>
+								<option v-for="month in months_" v-bind:value="month">{{month}}</option>
+							</select>
+						</label>
+					</div>
+				</div>
+				<hr />
+				<div class="row ">
+					<div class="col">
+						<div class="table-responsive">
+						<!-- Solo muestra los partidos que se juegan en ese Mes/meses seleccionados -->
+							<table v-for="month in filteredMonths" class="table table-sm">
+								<tr class="thead-dark">
+									<th colspan="5">{{month.name}}</th>
+								</tr>
+								<tr class="thead-light">
+									<th>Date</th>
+									<th>Teams</th>
+									<th>Location</th>
+									<th>Times</th>
+									<th>Teams Notes</th>
+								</tr>
+								<tbody>
+									<!--Al hacer click aqui, debería mostrar mapa correspondiente-->
+									<tr id="fila" v-for="date in month.dates" v-on:click="mostrarMapa(date.map)">
+										<td>{{ date.date }}</td>
+										<td>{{ date.teams }}</td>
+										<td><a v-bind:href="date.link" target="_blank" title="Click para ver el mapa.">{{ date.location }}</a></td>
+										<td>{{ date.times }}</td>
+										<td>
+										<!-- Muestra la información del juego en donde se están escribiendo los mensajes. En este punto aprovecho para guardar la información del juego y para ello
+										 ejecuto la función mostrarMsjeJuego() después de la función mostrarPagina()  -->
+											<nav>
+												<a id="mensaje" v-on:click="mostrarPagina('TEAMS NOTES');mostrarMsjeJuego(date.date,date.teams,date.location,date.times,date.gameId)" v-bind:class="{active: page=='TEAMS NOTES'}"> TEAMS NOTES</a>
+											</nav>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<!--Mapa- mostrado en landscape. Usando Vue-->
+					<div class="col-4 map">
+						<h4>Map</h4>
+						<iframe v-bind:src="map"></iframe>
+					</div>
+				</div>
+				<hr />
+			</div>
+
+		</div>
+		<!--Cuerpo de Teams Note - Messages -->
+		<div class="row teams notes" v-if="page == 'TEAMS NOTES'">
+
+			<div class="col-12">
+				<div class="row">
+					<h2><strong>Information</strong></h2>
+				</div>
+				<div class="row ">
+					<div class="col">
+						<div class="table-responsive">
+							<table class="table table-sm">
+								<thead>
+									<tr class="thead-light">
+										<th>Date</th>
+										<th>Teams</th>
+										<th>Location</th>
+										<th>Times</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>{{date}}</td>
+										<td>{{teams}}</td>
+										<td>{{location}}</td>
+										<td>{{times}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<!--Mapa- mostrado en landscape. Usando Vue-->
+					<div class="col-4 map">
+						<h4>Map</h4>
+						<iframe v-bind:src="map"></iframe>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<h2><strong>Messages</strong></h2>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<label>Enter your message:</label>
+						<!--<input type="text" v-model:value="mensaje" onfocus="this.value='';limpiar()">-->
+						<input type="text" v-model:value="mensaje" v-on:onfocus="limpiar()">
+						<!--Poner value="" para limpiar caja de texto -->
+						<button type="button" class="btn btn-success" v-on:click="send">Send</button>
+						<p>{{error}}</p>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<div class="table-responsive" v-for="mensaje in mensajes">
+							<!-- -->
+							<table class="table table-sm" v-if="mensaje.gameId == gameId">
+								<thead class="thead-light">
+									<tr>
+										<th>Date: </th>
+										<th>{{mensaje.fecha}}</th>
+										<th>Author: </th>
+										<th>{{mensaje.email}}</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td colspan="4"><span>{{ mensaje.texto }}</span></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<!--Cuerpo Sign In -->
+		<div class="row sign in" v-if="page == 'SIGN IN'">
+
+			<div class="col-12">
+				<h2>Enter Mail and Password</h2>
+				<label>Email:</label>
+				<input type="text" v-model:value="userEmail" onfocus="this.value=''">
+			</div>
+			<div class="col-12">
+				<label>Password:</label>
+				<input type="password" v-model:value="userPassword" onfocus="this.value=''">
+				<button type="button" class="btn btn-success" v-on:click="register">Register</button>
+			</div>
+			<div class="col-12">
+				<button type="button" class="btn btn-success" v-on:click="login">Login Google</button>
+				<button type="button" class="btn btn-success" v-on:click="loginEmail">Login Another Mail</button>
+			</div>
+			<div class="col-12">
+				<p>{{error}}</p>
+			</div>
+
+		</div>
+
+		<!-- Cuerpo de Contact-->
+		<div class="row contact" v-if="page == 'CONTACT'">
+
+			<div class="col-12">
+				<h2>League Coordinator</h2>
+
+				<p><strong>About Game Information please direct all questions to:</strong> Michael Randall, League Coordinator</p>
+				<p class="contacto" id="telefono"> <strong>Phone: </strong><a href="tel:(630)690-8132">(630) 690-8132</a></p>
+				<p class="contacto"> <strong>Email: </strong><a href="mailto:michael.randall@chisoccer.org">michael.randall@chisoccer.org</a></p>
+				<h2>NYSCL</h2>
+				<p class="contacto"> <strong>Email: </strong><a href="mailto:nysl@chisoccer.org">nysl@chisoccer.org</a></p>
+
+			</div>
+		</div>
+		<!--Pie game-->
+		<div class="row game" v-if="page=='NYSL Game Information'">
+			<div class="col-12">
+				<div class="row">
+					<p><strong>Facility Type:</strong> Outdoor</p>
+				</div>
+				<div class="row">
+					<p><strong>Additional Information:</strong> If deemed necessary by NYSL, games may be shortened or cancelled due to extreme weather conditions.</p>
+				</div>
+				<div class="row">
+					<div class="col-8">
+						<p><strong>Please direct all questions to:</strong> Michael Randall, League Coordinator </p>
+					</div>
+					<div class="col-4">
+						<nav>
+							<a v-on:click="mostrarPagina('CONTACT')" v-bind:class="{active:page=='CONTACT'}"> CONTACT</a>
+						</nav>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	 <!-- Lo siguiente se copia desde la pestania "Proyect Overview" -> Seetings -> Configuración del proyecto -->
+
+	<!-- The core Firebase JS SDK is always required and must be listed first -->
+	<script src="https://www.gstatic.com/firebasejs/7.2.0/firebase-app.js"></script>
+
+	<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+	<script src="https://www.gstatic.com/firebasejs/7.2.0/firebase-analytics.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/7.2.1/firebase-auth.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/7.2.1/firebase-database.js"></script>
+
+   
+	<script>
+		// Your web app's Firebase configuration
+		var firebaseConfig = {
+			apiKey: "AIzaSyCFvoFQr9kK_x32t2YdpCUNwrvO85yDT0g",
+			authDomain: "nyscl-13c4f.firebaseapp.com",
+			databaseURL: "https://nyscl-13c4f.firebaseio.com",
+			projectId: "nyscl-13c4f",
+			storageBucket: "nyscl-13c4f.appspot.com",
+			messagingSenderId: "88927277728",
+			appId: "1:88927277728:web:64b8422b9b4b968eb72fc5",
+			measurementId: "G-42TPBC92T5"
+		};
+		// Initialize Firebase
+		firebase.initializeApp(firebaseConfig);
+		firebase.analytics();
+
+	</script>
+	<!-- development version, includes helpful console warnings -->
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<!-- Optional JavaScript -->
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	<!-- Include the Vue library -->
+	<script src="https://unpkg.com/vue/dist/vue.js"> </script>
+	<!-- Carga script para acceder al listado de miembros senate, con datos reales desde el servidor-->
+	<script src="js/information.js"></script>
+	<script src="js/schedule.js"></script>
+
+
+</body>

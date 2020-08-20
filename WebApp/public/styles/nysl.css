@@ -1,0 +1,95 @@
+@media only screen and (orientation: portrait) {
+	.map {
+		display: none;
+	}
+
+	nav {
+		margin: 0px;
+		text-align: left;
+	}
+	
+}
+
+/*Contenido para Landscape*/
+@media only screen and (orientation: landscape) {
+	#fila {
+		cursor: pointer;
+	}
+
+	nav {
+		margin: 0px;
+		text-align: left;
+	}
+}
+#mensaje {
+
+		font-size: 50%;
+	}
+
+/*Contenido independiente de la orientación*/
+body {
+	background-color: yellow;
+	border: 5px solid red;
+
+}
+
+iframe {
+	width: 100%;
+}
+
+#map h4 {
+	color: blue;
+}
+
+img {
+	width: 150px;
+}
+
+div {
+	margin-bottom: 3px;
+	margin-top: 3px;
+}
+
+.active {
+	color: white;
+	background-color: goldenrod;
+}
+
+
+
+nav a {
+	text-decoration: none;
+	background-color: white;
+	color: darkblue;
+	padding: 4px;
+	/*8*/
+	border: 5px solid red;
+	border-radius: 10px;
+
+}
+
+
+a:hover {
+	color: white;
+	background-color: gray;
+}
+
+p {
+	display: block;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	text-align: justify;
+	text-justify: auto;
+}
+
+h1 {
+	color: orangered;
+}
+
+h2 {
+	color: blue;
+}
+
+hr {
+	border: 3px dashed blue;
+}
